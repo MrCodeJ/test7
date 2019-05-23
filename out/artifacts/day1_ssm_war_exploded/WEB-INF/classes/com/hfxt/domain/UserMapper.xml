@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hfxt.dao.UserDao">
+	
+	<!-- 登录 -->	
+	<select id="findUserbyLogin" parameterType="String" resultMap="user">
+		select * from tb_user where username = #{username} 
+	</select>
+
+	<!-- 根据条件来查询记录条数 -->
+	<select id="count" resultType="int">
+		select count(1) from tb_user u
+		<where>
+		<if test="username!=null and username!=''">
+				u.username like "%"#{username}"%" 
+			</if>
+			
+			<if test="status!=null and status!=0">
+				and u.status = #{status} 
+			</if>
+		</where>
+	</select>
+
+	<!-- 条件，分页 -->
+	<select id="findUsersByPage" resultMap="user" >
+		select * from tb_user u 
+		<where>
+			<if test="username!=null and username!=''">
+				u.username like "%"#{username}"%" 
+			</if>
+			
+			<if test="status!=null and status!=0">
+				and u.status = #{status} 
+			</if>
+		</where>
+		 order by u.id desc limit #{currentNum} ,#{pageSize}
+	</select>
+
+	<!-- 查询所有 -->
+	<select id="findAll" resultMap="user">
+		select * from tb_user
+	</select>
+
+	<!-- 删除 -->
+	<delete id="deleteUser" parameterType="int">
+		delete from tb_user where id = #{id}
+	</delete>
+
+	<!-- 查询单个 -->
+	<select id="findUser" resultMap="user" parameterType="int">
+		select * from tb_user where id = #{id}
+	</select>
+
+	<!-- 修改 -->
+	<update id="updateUser" parameterType="TbUser">
+		update tb_user set username=#{username},password=#{password},userAge=#{age} where id=#{id} 
+	</update>
+
+	<!-- 增加 -->
+	<insert id="addUser"  parameterType="TbUser">
+		insert into tb_user(username,password,createtime,userAge)
+		values(#{username},#{password},now(),#{age})
+	</insert>
+	
+	<!-- 因为有字段名不一样，采取手动映射 -->
+	<resultMap type="TbUser" id="user">
+		<!-- 如果表中字段和属性名不一致的时候 -->
+		<result column="rold_id" property="roleId"/>
+	</resultMap>
+
+</mapper>
